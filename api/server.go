@@ -3,6 +3,8 @@ package api
 import (
 	db "github.com/X3nonxe/simplebank/db/sqlc"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/validator/v10"
 )
 
 // server for banking service
@@ -16,13 +18,19 @@ func NewServer(store db.Store) *Server {
 		store: store,
 	}
 	router := gin.Default()
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		v.RegisterValidation("currency", validCurrency)
+	}
 
-	// Define routes here
+	// Account Routes
 	router.POST("/accounts", server.createAccount)
 	router.GET("/accounts/:id", server.getAccount)
 	router.GET("accounts", server.listAccount)
 	router.PUT("/accounts/:id", server.updateAccount)
 	router.DELETE("/accounts/:id", server.deleteAccount)
+
+	// Transfer Routes
+	router.POST("/transfers", server.createTransfer)
 
 	server.router = router
 

@@ -1,7 +1,11 @@
-CREATE TYPE "Currency" AS ENUM (
-  'USD',
-  'EUR'
-);
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'Currency') THEN
+    CREATE TYPE "Currency" AS ENUM ('USD', 'EUR');
+  END IF;
+END
+$$;
+
 
 CREATE TABLE "accounts" (
   "id" bigserial PRIMARY KEY,
